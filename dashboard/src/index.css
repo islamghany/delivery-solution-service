@@ -1,0 +1,28 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+
+.title--h1{
+    @apply text-4xl sm:text-5xl;
+  }
+  .title--h2{
+    @apply text-2xl;
+  }
+  .title--h3{
+    @apply text-xl;
+  }
+  .title--h4{
+    @apply text-lg;
+  }
+  .title--h5{
+    @apply text-base;
+  }
+  .title--h6{
+    @apply text-sm;
+  }
+  
+  p{
+    @apply text-base
+  }
+  

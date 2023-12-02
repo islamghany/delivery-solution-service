@@ -1,0 +1,746 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "version": "1.0.0",
+    "title": "Delivery Sevice",
+    "description": "A private delivery service company in Cologne handles the collection and delivery of parcels for people.",
+    "termsOfService": "https://deliver-service/terms-of-service",
+    "contact": {
+      "name": "islam mostafa",
+      "email": "islamghany3@gmail.com",
+      "url": "https://github.com/islamghany"
+    },
+    "license": {
+      "name": "Islam mostafa license",
+      "url": "https://github.com/islamghany"
+    }
+  },
+  "servers": [
+    {
+      "url": "http://localhost:8080",
+      "description": "the dev server"
+    },
+    {
+      "url": "https://delivery-service.com",
+      "description": "the prod server"
+    }
+  ],
+  "paths": {
+    "/sender/login": {
+      "post": {
+        "tags": ["senders"],
+        "description": "Sinder login",
+        "operationId": "signinSinder",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AuthenticateUser"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "user logged in",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthenticateUserResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequestResponse"
+          },
+          "401": {
+            "$ref": "#/components/responses/AuthenticationRequiredResponse"
+          },
+          "422": {
+            "$ref": "#/components/responses/FailedValidationResponse"
+          },
+          "500": {
+            "$ref": "#/components/responses/ServerError"
+          }
+        }
+      }
+    },
+    "/auth": {
+      "post": {
+        "tags": ["senders"],
+        "description": "get current user",
+        "operationId": "getCurrentUser",
+        "responses": {
+          "201": {
+            "description": "user",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "properties": {
+                        "type": {
+                          "type": "string",
+                          "enum": ["biker", "sender"]
+                        },
+                        "user": {
+                          "$ref": "#/components/schemas/Biker"
+                        }
+                      }
+                    },
+                    {
+                      "properties": {
+                        "type": {
+                          "type": "string",
+                          "enum": ["biker", "sender"]
+                        },
+                        "user": {
+                          "$ref": "#/components/schemas/Sender"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequestResponse"
+          },
+          "401": {
+            "$ref": "#/components/responses/AuthenticationRequiredResponse"
+          },
+          "422": {
+            "$ref": "#/components/responses/FailedValidationResponse"
+          },
+          "500": {
+            "$ref": "#/components/responses/ServerError"
+          }
+        }
+      }
+    },
+    "/biker/login": {
+      "post": {
+        "tags": ["bikers"],
+        "description": "Biker login",
+        "operationId": "signinBiker",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AuthenticateUser"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "user logged in",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthenticateUserResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequestResponse"
+          },
+          "401": {
+            "$ref": "#/components/responses/AuthenticationRequiredResponse"
+          },
+          "422": {
+            "$ref": "#/components/responses/FailedValidationResponse"
+          },
+          "500": {
+            "$ref": "#/components/responses/ServerError"
+          }
+        }
+      }
+    },
+    "/orders/sender": {
+      "get": {
+        "tags": ["orders"],
+        "description": "obtain orders for a specific sender",
+        "operationId": "getOrdersForSender",
+
+        "responses": {
+          "200": {
+            "description": "success request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OrdersResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/AuthenticationRequiredResponse"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFoundResponse"
+          },
+          "500": {
+            "$ref": "#/components/responses/ServerError"
+          }
+        }
+      }
+    },
+    "/orders": {
+      "post": {
+        "tags": ["orders"],
+        "description": "Create New Order",
+        "operationId": "createOrder",
+        "requestBody": {
+          "$ref": "#/components/requestBodies/AddOrder"
+        },
+        "responses": {
+          "201": {
+            "description": "success request",
+            "headers": {
+              "Location": {
+                "description": "the id of the created order",
+                "schema": {
+                  "type": "string",
+                  "example": "/orders/1"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Order"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequestResponse"
+          },
+          "401": {
+            "$ref": "#/components/responses/AuthenticationRequiredResponse"
+          },
+          "422": {
+            "$ref": "#/components/responses/FailedValidationResponse"
+          },
+          "500": {
+            "$ref": "#/components/responses/ServerError"
+          }
+        }
+      }
+    },
+    "/orders/biker/in-process": {
+      "get": {
+        "tags": ["orders"],
+        "description": "obtain orders for biker to do",
+        "operationId": "getToDoOrdersForBiker",
+
+        "responses": {
+          "200": {
+            "description": "success request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OrdersResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/AuthenticationRequiredResponse"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFoundResponse"
+          },
+          "500": {
+            "$ref": "#/components/responses/ServerError"
+          }
+        }
+      }
+    },
+    "/orders/biker/idle": {
+      "get": {
+        "tags": ["orders"],
+        "description": "obtain orders for biker that is idle",
+        "operationId": "getIdleOrders",
+
+        "responses": {
+          "200": {
+            "description": "success request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OrdersResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/AuthenticationRequiredResponse"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFoundResponse"
+          },
+          "500": {
+            "$ref": "#/components/responses/ServerError"
+          }
+        }
+      }
+    },
+    "/orders/{id}/claim": {
+      "patch": {
+        "tags": ["orders"],
+        "description": "claim order",
+        "operationId": "claimOrder",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "the id of the order",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "properties": {
+                  "picked_up_at": {
+                    "type": "string",
+                    "format": "date",
+                    "example": "2014-06-26T04:07:31.000Z",
+                    "nullable": false
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequestResponse"
+          },
+          "401": {
+            "$ref": "#/components/responses/AuthenticationRequiredResponse"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFoundResponse"
+          },
+          "409": {
+            "$ref": "#/components/responses/EditConflictResponse"
+          },
+          "500": {
+            "$ref": "#/components/responses/ServerError"
+          }
+        }
+      }
+    },
+    "/orders/{id}/deliver": {
+      "patch": {
+        "tags": ["orders"],
+        "description": "deliver order",
+        "operationId": "deliverOrder",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "the id of the order",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "properties": {
+                  "delivered_at": {
+                    "type": "string",
+                    "format": "date",
+                    "example": "2014-06-26T04:07:31.000Z",
+                    "nullable": false
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequestResponse"
+          },
+          "401": {
+            "$ref": "#/components/responses/AuthenticationRequiredResponse"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFoundResponse"
+          },
+          "409": {
+            "$ref": "#/components/responses/EditConflictResponse"
+          },
+          "500": {
+            "$ref": "#/components/responses/ServerError"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "OrdersResponse": {
+        "description": "a list of orders",
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/Order"
+        }
+      },
+      "Order": {
+        "description": "model containg the order schema",
+        "type": "object",
+        "required": ["id", "pick_up_address", "delivery_address", "title"],
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64",
+            "example": 4
+          },
+          "title": {
+            "type": "string",
+            "example": "Box"
+          },
+          "pick_up_address": {
+            "type": "string",
+            "example": "Cairo"
+          },
+          "delivery_address": {
+            "type": "string",
+            "example": "Ismailia"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date",
+            "example": "2014-06-26T04:07:31.000Z"
+          },
+          "delivered_at": {
+            "type": "string",
+            "format": "date",
+            "example": "2014-06-26T04:07:31.000Z"
+          },
+          "picked_up_at": {
+            "type": "string",
+            "format": "date",
+            "example": "2014-06-26T04:07:31.000Z"
+          },
+
+          "status": {
+            "type": "string",
+            "enum": ["idle", "in_process", "delivered"],
+            "description": "order status"
+          }
+        }
+      },
+
+      "ErrorResponse": {
+        "description": "Server Error",
+        "type": "object",
+        "nullable": false,
+        "properties": {
+          "message": {
+            "type": "string"
+          }
+        }
+      },
+      "CreateOrder": {
+        "description": "data required for create an order",
+        "type": "object",
+        "nullable": false,
+        "required": ["title", "pick_up_address", "delivery_address"],
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64",
+            "example": 4
+          },
+          "title": {
+            "type": "string",
+            "example": "Box"
+          },
+          "pick_up_address": {
+            "type": "string",
+            "example": "Cairo"
+          },
+          "delivery_address": {
+            "type": "string",
+            "example": "Ismailia"
+          }
+        }
+      },
+      "Biker": {
+        "type": "object",
+        "nullable": false,
+        "required": ["id", "name", "email", "password"],
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "name": {
+            "type": "string"
+          },
+
+          "email": {
+            "type": "string"
+          },
+          "password": {
+            "type": "string"
+          }
+        }
+      },
+      "Sender": {
+        "type": "object",
+        "nullable": false,
+        "required": ["id", "name", "email", "password"],
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "name": {
+            "type": "string"
+          },
+
+          "email": {
+            "type": "string"
+          },
+          "password": {
+            "type": "string"
+          }
+        }
+      },
+      "CreateUser": {
+        "type": "object",
+        "nullable": false,
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "username": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string"
+          },
+          "password": {
+            "type": "string"
+          }
+        }
+      },
+      "AuthenticateUserResponse": {
+        "type": "object",
+        "nullable": false,
+        "required": ["user", "token", "type"],
+        "properties": {
+          "user": {
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/Biker"
+              },
+              {
+                "$ref": "#/components/schemas/Sender"
+              }
+            ]
+          },
+          "token": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string",
+            "enum": ["biker", "sender"]
+          }
+        }
+      },
+
+      "AuthenticateUser": {
+        "type": "object",
+        "nullable": false,
+        "properties": {
+          "email": {
+            "type": "string"
+          },
+          "password": {
+            "type": "string"
+          }
+        }
+      },
+
+      "SuccessResponse": {
+        "description": "success operation",
+        "type": "object",
+        "properties": {
+          "messgae": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "responses": {
+      "ServerError": {
+        "description": "Server Error",
+        "content": {
+          "application/json": {
+            "schema": {
+              "allOf": [
+                {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              ]
+            }
+          }
+        }
+      },
+      "NotFoundResponse": {
+        "description": "the requested resource could not be found - 404",
+        "content": {
+          "application/json": {
+            "schema": {
+              "allOf": [
+                {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              ]
+            }
+          }
+        }
+      },
+      "FailedValidationResponse": {
+        "description": "Invlaid Input data - 422",
+        "content": {
+          "application/json": {
+            "schema": {
+              "allOf": [
+                {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              ]
+            }
+          }
+        }
+      },
+      "BadRequestResponse": {
+        "description": "Bad Request - 400",
+        "content": {
+          "application/json": {
+            "schema": {
+              "allOf": [
+                {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              ]
+            }
+          }
+        }
+      },
+      "EditConflictResponse": {
+        "description": "Edit Conflict Error - 409",
+        "content": {
+          "application/json": {
+            "schema": {
+              "allOf": [
+                {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              ]
+            }
+          }
+        }
+      },
+      "AuthenticationRequiredResponse": {
+        "description": "must be authenticated to access this resource - 401",
+        "content": {
+          "application/json": {
+            "schema": {
+              "allOf": [
+                {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              ]
+            }
+          }
+        }
+      },
+      "NotPermittedResponse": {
+        "description": "user account doesn't have the necessary permissions to access this resource - 403",
+        "content": {
+          "application/json": {
+            "schema": {
+              "allOf": [
+                {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              ]
+            }
+          }
+        }
+      }
+    },
+    "requestBodies": {
+      "AddOrder": {
+        "description": "create order data",
+        "required": true,
+        "content": {
+          "application/json": {
+            "schema": {
+              "allOf": [
+                {
+                  "$ref": "#/components/schemas/CreateOrder"
+                }
+              ]
+            }
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "refreshToken": {
+        "type": "apiKey",
+        "in": "cookie",
+        "name": "refresh_token"
+      },
+      "accessToken": {
+        "type": "apiKey",
+        "in": "cookie",
+        "name": "access_token"
+      }
+    }
+  }
+}

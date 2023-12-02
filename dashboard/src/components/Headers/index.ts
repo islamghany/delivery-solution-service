@@ -1,0 +1,1 @@
+export { HeaderWithTabs } from "./HeaderWithTabs";
